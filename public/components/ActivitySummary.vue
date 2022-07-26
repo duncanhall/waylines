@@ -1,8 +1,8 @@
 <!-- Please remove this file from your project -->
 <template>
-  <div>
-      {{ title }}: {{ splits.length }}km
-  </div>
+  <span>
+    {{ title }}: {{ splits.length }}km
+  </span>
 </template>
 
 <script>
@@ -12,6 +12,9 @@ export default {
     title: String,
     splits: Array
   },
+  data() {
+    return
+  }
 }
 
 </script>

@@ -8,22 +8,19 @@
 </template>
 
 <script>
-
+import { mapGetters } from "vuex";
 import ActivitySummary from './ActivitySummary.vue';
-
 
 export default {
     name: "Fert",
     mounted: async function () {
 
     },
-    data() {
-        return {
-            activities: []
-        };
+    computed: {
+      ...mapGetters({
+        activities: 'activities',
+      }),
     },
-    methods: {},
-    computed: {},
     components: { ActivitySummary }
 }
 

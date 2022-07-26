@@ -2,48 +2,47 @@ import { default as strava, Strava } from 'strava-v3';
 import * as fert from '~/services/fert';
 
 export const state = () => ({
-  token: null,
-  refreshToken: null,
   activities: [],
-  isLoggedIn: false
+  isLoggedIn: false,
+  athlete: {}
 })
 
 export const getters = {
   isLoggedIn(state) {
     return state.isLoggedIn
-  }
+  },
+  athleteName(state) {
+    const { athlete } = state;
+    return `${athlete.firstname} ${athlete.lastname}`;
+  },
+  activities(state) {
+    return state.activities
+  },
 }
 
 export const mutations = {
-  storeOauth(state, { token, refreshToken }) {
-    state.token = token;
-    state.refreshToken = refreshToken;
-  },
-  registerActivity(state, activity) {
-    state.activities.push(activity);
+  storeActivities(state, value) {
+    state.activities = value;
   },
   setLoggedIn(state, isLoggedIn) {
     state.isLoggedIn = isLoggedIn;
-    console.log('logged in state is ', isLoggedIn)
+  },
+  setAthlete(state, athlete) {
+    state.athlete = athlete;
   }
 }
 
 export const actions = {
   async nuxtServerInit({ commit }, { route }) {
-
     const { code } = route.query;
     const oauth = await fert.auth(code);
 
-    console.log(oauth);
-    console.log()
-
+    commit('setAthlete', oauth.athlete);
     commit('setLoggedIn', oauth.loggedIn);
 
-    // const activities = await strava.athlete.listActivities({ access_token: token, per_page: 10 });
-    // const ids = activities.map(a => a.id);
-    // Promise.all(ids.map(async (aid) => {
-    //   const data = await strava.activities.get({ id: aid, access_token: token, include_all_efforts: false });
-    //   commit('registerActivity', data);
-    // }));
+    if (oauth.loggedIn) {
+      const activities = await fert.loadActivities();
+      commit('storeActivities', activities);
+    }
   }
 }
